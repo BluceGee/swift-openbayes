@@ -5,7 +5,7 @@ import gradio as gr
 
 from swift.llm import DATASET_MAPPING
 from swift.ui.base import BaseUI
-
+from swift.ui.llm_train.CONFIG import OPENBAYES_DATASET_MAPPING
 
 class Dataset(BaseUI):
 
@@ -15,6 +15,16 @@ class Dataset(BaseUI):
         'dataset': {
             'label': {
                 'zh': '数据集名称',
+                'en': 'Dataset Code'
+            },
+            'info': {
+                'zh': '选择训练的数据集，支持复选',
+                'en': 'The dataset(s) to train the models'
+            }
+        },
+        'openbayes_dataset': {
+            'label': {
+                'zh': 'openbayes 数据集名称',
                 'en': 'Dataset Code'
             },
             'info': {
@@ -72,6 +82,16 @@ class Dataset(BaseUI):
                 'en': 'An extra dataset config to register your own datasets'
             }
         },
+        'openbayes_dataset_info': {
+            'label': {
+                'zh': 'openbayes数据集选择',
+                'en': 'Custom dataset config'
+            },
+            'info': {
+                'zh': 'openbayes数据集选择',
+                'en': 'An extra dataset config to register your own datasets'
+            }
+        },
         'dataset_param': {
             'label': {
                 'zh': '数据集设置',
@@ -91,8 +111,18 @@ class Dataset(BaseUI):
                     scale=20,
                     allow_custom_value=True)
                 gr.Textbox(elem_id='custom_dataset_info', is_list=False, scale=20)
+
+            with gr.Row():
+                with gr.Column():
+                    gr.Dropdown(
+                        elem_id='openbayes_dataset',
+                        multiselect=True,
+                        choices=list(OPENBAYES_DATASET_MAPPING),
+                        scale=20,
+                        allow_custom_value=True)
             with gr.Row():
                 gr.Slider(elem_id='dataset_test_ratio', minimum=0.0, maximum=1.0, step=0.05, scale=20)
                 gr.Slider(elem_id='max_length', minimum=32, maximum=32768, step=1, scale=20)
                 gr.Textbox(elem_id='train_dataset_sample', scale=20)
                 gr.Textbox(elem_id='val_dataset_sample', scale=20)
+                

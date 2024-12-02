@@ -9,7 +9,14 @@ from swift.ui.llm_eval.llm_eval import LLMEval
 from swift.ui.llm_export.llm_export import LLMExport
 from swift.ui.llm_infer.llm_infer import LLMInfer
 from swift.ui.llm_train.llm_train import LLMTrain
+from swift.ui.llm_train.model import Model
+from swift.ui.llm_datasets.llm_datasets import LLDatasets
+
+
 from swift.utils import get_main
+
+
+
 
 locale_dict = {
     'title': {
@@ -52,6 +59,9 @@ def run_ui(arguments: WebuiArguments):
     LLMInfer.set_lang(lang)
     LLMExport.set_lang(lang)
     LLMEval.set_lang(lang)
+    LLDatasets.set_lang(lang)
+
+
     with gr.Blocks(title='SWIFT WebUI') as app:
         gr.HTML(f"<h1><center>{locale_dict['title'][lang]}</center></h1>")
         gr.HTML(f"<h3><center>{locale_dict['sub_title'][lang]}</center></h3>")
@@ -66,11 +76,17 @@ def run_ui(arguments: WebuiArguments):
                 LLMTrain.build_ui(LLMTrain)
                 LLMExport.build_ui(LLMExport)
                 LLMEval.build_ui(LLMEval)
+                LLDatasets.build_ui(LLDatasets)
+                with gr.TabItem(elem_id='openbayes-beryllium', label='openbayes-beryllium'):
+                    LLDatasets.gen_ui()
             else:
                 LLMTrain.build_ui(LLMTrain)
                 LLMInfer.build_ui(LLMInfer)
                 LLMExport.build_ui(LLMExport)
                 LLMEval.build_ui(LLMEval)
+
+                LLDatasets.build_ui(LLDatasets)
+
 
     concurrent = {}
     if version.parse(gr.__version__) < version.parse('4.0.0') and os.environ.get('MODELSCOPE_ENVIRONMENT') != 'studio':

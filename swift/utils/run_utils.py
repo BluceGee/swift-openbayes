@@ -13,7 +13,6 @@ NoneType = type(None)
 
 def get_main(args_class: Type[_TArgsClass],
              llm_x: Callable[[_TArgsClass], _T]) -> Callable[[Union[List[str], _TArgsClass, NoneType]], _T]:
-
     def x_main(argv: Union[List[str], _TArgsClass, NoneType] = None, **kwargs) -> _T:
         logger.info(f'Start time of running main: {datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}')
         if not isinstance(argv, (list, tuple, NoneType)):

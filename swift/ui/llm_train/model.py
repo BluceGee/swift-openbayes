@@ -83,6 +83,7 @@ class Model(BaseUI):
     @classmethod
     def do_build_ui(cls, base_tab: Type['BaseUI']):
         with gr.Accordion(elem_id='model_param', open=True):
+        # with gr.TabItem(elem_id='llm_train', label=''):
             with gr.Row():
                 model_type = gr.Dropdown(
                     elem_id='model_type',
@@ -138,3 +139,6 @@ class Model(BaseUI):
         clear_cache.click(clear_record, inputs=[model_type], outputs=[train_record])
 
         reset_btn.click(reset, inputs=[model_type], outputs=[model_id_or_path, system, template_type, model_state])
+
+
+

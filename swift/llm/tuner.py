@@ -28,7 +28,7 @@ def handle_target_modules(model, args: SftArguments) -> None:
         target_modules += find_embedding(model)
     if args.lora_use_all:
         target_modules.remove('ALL')
-        target_modules += find_all_linears(model, args.quantization_bit, args.model_type, args.quant_method)
+        # target_modules += find_all_linears(model, args.quantization_bit, args.model_type, args.quant_method)
     args.target_modules = target_modules
     if not args.target_regex:
         logger.info(f'target_modules: {args.target_modules}')

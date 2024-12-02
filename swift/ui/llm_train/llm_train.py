@@ -28,6 +28,8 @@ from swift.ui.llm_train.rlhf import RLHF
 from swift.ui.llm_train.runtime import Runtime
 from swift.ui.llm_train.save import Save
 from swift.ui.llm_train.self_cog import SelfCog
+
+
 from swift.utils import get_logger
 
 logger = get_logger()
@@ -298,6 +300,7 @@ class LLMTrain(BaseUI):
                         cancels=[Runtime.log_event],
                     ).then(Runtime.reset, [], [Runtime.element('logging_dir')] + [Hyper.element('output_dir')])
 
+
     @classmethod
     def update_runtime(cls):
         return gr.update(open=True), gr.update(visible=True)
@@ -329,6 +332,7 @@ class LLMTrain(BaseUI):
         keys = [key for key, value in cls.elements().items() if not isinstance(value, (Tab, Accordion))]
         model_type = None
         do_rlhf = False
+
         for key, value in zip(keys, args):
             compare_value = default_args.get(key)
             if isinstance(value, str) and re.fullmatch(cls.int_regex, value):
@@ -337,6 +341,9 @@ class LLMTrain(BaseUI):
                 value = float(value)
             elif isinstance(value, str) and re.fullmatch(cls.bool_regex, value):
                 value = True if value.lower() == 'true' else False
+
+
+
             if key not in ignore_elements and key in default_args and compare_value != value and value:
                 kwargs[key] = value if not isinstance(value, list) else ' '.join(value)
                 kwargs_is_list[key] = isinstance(value, list) or getattr(cls.element(key), 'is_list', False)
@@ -362,14 +369,19 @@ class LLMTrain(BaseUI):
             raise gr.Error(cls.locale('dataset_alert', cls.lang)['value'])
 
         cmd = 'rlhf' if do_rlhf else 'sft'
-        if kwargs.get('deepspeed'):
-            more_params_cmd += f' --deepspeed {kwargs.pop("deepspeed")} '
+        # if kwargs.get('deepspeed'):
+        #     more_params_cmd += f' --deepspeed {kwargs.pop("deepspeed")} '
         sft_args = RLHFArguments(
             **{
                 key: value.split(' ') if kwargs_is_list.get(key, False) and isinstance(value, str) else value
                 for key, value in kwargs.items()
             })
         params = ''
+
+        if 'openbayes_dataset' in kwargs:
+            kwargs['dataset'] = kwargs['dataset'] + ' ' + kwargs['openbayes_dataset']
+            del kwargs['openbayes_dataset']
+
 
         sep = f'{cls.quote} {cls.quote}'
         for e in kwargs:
@@ -437,7 +449,13 @@ class LLMTrain(BaseUI):
         run_command, sft_args, other_kwargs = cls.train(*args)
         if not other_kwargs['dry_run']:
             os.makedirs(sft_args.logging_dir, exist_ok=True)
+            print(" 下面将要运行 这个指令 ----------------------------------")
+            print(run_command)
+            print(" 那么 我将开始执行了 ")
             os.system(run_command)
+            
+
+
             time.sleep(1)  # to make sure the log file has been created.
             gr.Info(cls.locale('submit_alert', cls.lang)['value'])
         return run_command, sft_args.logging_dir, gr.update(open=True), Runtime.refresh_tasks(
